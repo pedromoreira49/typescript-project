@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
+import { celebrate, Joi } from 'celebrate';
 import  Knex  from '../database/connection';
 import multerConfig from '../config/multer';
 
@@ -48,7 +49,20 @@ locationsRouter.get('/:id', async (req, res) =>{
     return res.json({ location, items });
 });
 
-locationsRouter.post('/', async (req, res) => {
+locationsRouter.post('/', celebrate({
+    body: Joi.object().keys({
+        nome: Joi.string().required(),
+        email: Joi.string().required().email(),
+        whatsapp: Joi.string().required(),
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+        city: Joi.string().required(),
+        uf: Joi.string().required().max(2),
+        items: Joi.string().required(),
+    })
+}, {
+    abortEarly: false
+}), async (req, res) => {
     const {
         nome,
         email,
